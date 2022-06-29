@@ -24,7 +24,7 @@ trait AuthTrait
     /**
      * @return Authenticatable|null
      */
-    public static function getUser()
+    public function getUser()
     {
         return Auth::user();
     }
@@ -32,7 +32,7 @@ trait AuthTrait
     /**
      * @return mixed
      */
-    public static function getUserId()
+    public function getUserId()
     {
         return self::getUser()->id;
     }
@@ -40,7 +40,7 @@ trait AuthTrait
     /**
      * @return mixed
      */
-    public static function getUserRoleId()
+    public function getUserRoleId()
     {
         return self::getUser()->role_id;
     }
@@ -49,7 +49,7 @@ trait AuthTrait
      * @param bool $status
      * @return bool
      */
-    public static function isProvider(bool $status = false): bool
+    public function isProvider(bool $status = false): bool
     {
         $role_id = self::getUser()->role_id;
         if ($role_id == 3) {
@@ -62,7 +62,7 @@ trait AuthTrait
      * @param bool $status
      * @return bool
      */
-    public static function isSeeker(bool $status = false): bool
+    public function isSeeker(bool $status = false): bool
     {
         $role_id = self::getUser()->role_id;
         if ($role_id == 4) {

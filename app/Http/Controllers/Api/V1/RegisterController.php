@@ -14,6 +14,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,7 +35,8 @@ class RegisterController extends BaseController
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|unique:users',
-            'password' => 'required',
+            'password' => 'required|min:6|max:20',
+            'user_type' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -65,30 +67,24 @@ class RegisterController extends BaseController
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone' => 'required',
+            'email' => 'required',
             'password' => 'required',
-            'role_id' => 'required',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('Data validation error', $validator->errors());
         }
 
-        if (Auth::attempt(['phone' => $request->email, 'password' => $request->password])) {
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
             $user = Auth::user();
             $tokenName = 'UserToken';
+            DB::table('users')
+                ->where('id', $user->id)
+                ->update([
+                    'last_login' => Carbon::now()
+                ]);
 
-            if ($request->token != $user->fcm_token) {
-                DB::table('users')
-                    ->where('id', $user->id)
-                    ->update([
-                        'fcm_token' => $request->token
-                    ]);
-            }
-
-            $user = Auth::user();
-            $success['user'] = $user;
             $success['token'] = $user->createToken($tokenName)->accessToken;
 
             return $this->sendResponse($success, 'User login successfully.');

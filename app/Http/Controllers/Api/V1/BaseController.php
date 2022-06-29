@@ -16,27 +16,6 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
-/**
- * 200 success
- * 201 created
- * 210 already exist
- * 211 deleted
- * 203 already exist
- * 400 bad request
- * 401 unauthorized
- * 403 permission denied
- * 402 payment required
- * 404 not found
- * 405 method not allowed
- * 406 data not found
- * 500 internal server error
- * 501 not implemented
- * 502 bad gateway
- * 503 service unavailable
- * 505 http version not supported
- * 504 gateway timeout
- * status codes
- */
 class BaseController extends Controller
 {
     /**

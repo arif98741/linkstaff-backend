@@ -33,16 +33,7 @@ class User extends Authenticatable
         'full_name',
         'email',
         'password',
-        'phone',
-        'otp_verified',
-        'gender',
-        'document_verified',
-        'role_id',
-        'user_slug',
-        'profile_photo',
-        'firebase_token',
-        'signature_otp',
-        'status',
+        'user_type',
     ];
 
     /**
@@ -63,88 +54,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    /**
-     * @return BelongsTo
-     */
-    public function role()
-    {
-        return $this->belongsTo(Role::class, 'role_id', 'id');
-    }
-
-    /**
-     * @return HasOne
-     */
-    public function user_address()
-    {
-        return $this->hasMany(UserAddress::class);
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function user_services()
-    {
-        return $this->hasMany(UserService::class);
-    }
-
-
-    /**
-     * @return BelongsToMany
-     */
-    public function specialities()
-    {
-        return $this->belongsToMany(Speciality::class, 'user_specialities');
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function user_academic_infos()
-    {
-        return $this->hasMany(UserAcademicInfo::class);
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function save_addresses()
-    {
-        return $this->hasMany(SavedAddress::class);
-    }
-
-
-    /**
-     * @return BelongsToMany
-     */
-    public function profession_data()
-    {
-        return $this->hasMany(UserProfessionalData::class);
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function language_proficiency()
-    {
-        return $this->hasMany(LanguageProficiency::class);
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function user_other_info()
-    {
-        return $this->hasMany(UserOtherInfo::class);
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function carts()
-    {
-        return $this->hasMany(Cart::class);
-    }
 
 
 }

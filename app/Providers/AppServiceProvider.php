@@ -15,10 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //this facade will mainly do some basic tasks as well
-        $this->app->bind('TakeCareAppFacade', function () {
-            return new AppSetting;
-        });
+
     }
 
     /**
