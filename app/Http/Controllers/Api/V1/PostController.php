@@ -107,22 +107,20 @@ class PostController extends BaseController
         $follow_page = array_column($follow, 'follow_page');
 
 
-        $pageExistence = Post::with(['user_post', 'page_post'])
+        $posts = Post::with(['user_post', 'page_post'])
             ->whereIn('user_id', $follow_to)
             ->orwhereIn('page_id', $follow_page)
             ->orderBy('created_at', 'desc')
             ->get();
-        return $pageExistence;
 
-        $data['page_id'] = $pageId;
-        $post = Post::create($data);
-        if ($post) {
 
-            return $this->sendResponse([], 'Post created successfully');
+        if ($posts != null) {
+
+            return $this->sendResponse($posts, 'Post fetched successfully');
 
         }
 
-        return $this->sendError('Failed to create post', []);
+        return $this->sendError('Not post available', []);
     }
 
 

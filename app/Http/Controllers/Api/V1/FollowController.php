@@ -53,7 +53,7 @@ class FollowController extends BaseController
 
         }
 
-        return $this->sendError('Failed to create page', []);
+        return $this->sendError('Failed to follow page', []);
     }
 
 
@@ -75,7 +75,7 @@ class FollowController extends BaseController
 
         $existence = Follow::where(['follow_by' => $this->getUserId(), 'follow_page' => $request->page_id])->first();
         if ($existence != null) {
-            return $this->sendError('Already followed this person', []);
+            return $this->sendError('Already followed this page', []);
         }
 
         $data = $validator->validated();
@@ -88,7 +88,7 @@ class FollowController extends BaseController
 
         }
 
-        return $this->sendError('Failed to create page', []);
+        return $this->sendError('Failed to follow page', []);
     }
 
 
