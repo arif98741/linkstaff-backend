@@ -1,15 +1,13 @@
 <?php
 /*
- * Copyright (c) 2021.
+ * Copyright (c) 2022.
  * This file is originally created and maintained by Ariful Islam.
- * You are not allowed to modify any parts of this code or copy or even redistribute
- * full or small portion to anywhere. If you have any question
- * fee free to ask me at arif98741@gmail.com.
  * Ariful Islam
  * Software Engineer
  * https://github.com/arif98741
  * $time
  */
+
 
 namespace App\Http\Controllers\Api\V1;
 
@@ -98,12 +96,9 @@ class PostController extends BaseController
 
     /**
      * Get post for Currently Logged in User
-     * @param Request $request
-     * @param $pageId
      * @return JsonResponse
-     * @throws ValidationException
      */
-    public function feed(Request $request)
+    public function feed()
     {
         $follow = Follow::where('follow_by', $this->getUserId())
             ->select('follow_to', 'follow_page')
