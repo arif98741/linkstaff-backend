@@ -15,6 +15,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\AppTrait\AuthTrait;
 use App\Models\Follow;
+use App\Models\Page;
+use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -25,7 +27,7 @@ class PostController extends BaseController
     use AuthTrait;
 
     /**
-     * Attach Post by Person/User
+     * Attach Post by Currently Logged in Person/User
      * @param Request $request
      * @return JsonResponse
      * @throws ValidationException
@@ -33,64 +35,99 @@ class PostController extends BaseController
     public function attachUserPost(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'content' => 'required',
+            'post_content' => 'required|min:3|max:250',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('Data validation error', $validator->errors());
         }
 
-        $existence = Follow::where(['follow_by' => $this->getUserId(), 'follow_to' => $request->person_id])->first();
-        if ($existence != null) {
-            return $this->sendError('Already followed this person', []);
-        }
 
         $data = $validator->validated();
-        $data['follow_by'] = $this->getUserId();
-        $data['follow_to'] = $request->person_id;
-        $page = Follow::create($data);
-        if ($page) {
+        $data['post_content'] = $request->post_content;
+        $data['user_id'] = $this->getUserId();
+        $post = Post::create($data);
+        if ($post) {
 
-            return $this->sendResponse([], 'Person followed successfully');
+            return $this->sendResponse([], 'Post created successfully');
 
         }
 
-        return $this->sendError('Failed to create page', []);
+        return $this->sendError('Failed to create post', []);
     }
 
 
     /**
-     * Page Follow
+     * Attach Post by Page belongs to Currently Logged in User
      * @param Request $request
+     * @param $pageId
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function followPage(Request $request)
+    public function attachPagePost(Request $request, $pageId)
     {
         $validator = Validator::make($request->all(), [
-            'page_id' => 'required',
+            'post_content' => 'required|min:3|max:250',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('Data validation error', $validator->errors());
         }
 
-        $existence = Follow::where(['follow_by' => $this->getUserId(), 'follow_page' => $request->page_id])->first();
-        if ($existence != null) {
-            return $this->sendError('Already followed this person', []);
+        $pageExistence = Page::where('user_id', $this->getUserId())->where('id', $pageId)->first();
+        if ($pageExistence == null) {
+
+            return $this->sendResponse([], 'Your given page does not belongs to you');
+
         }
 
         $data = $validator->validated();
-        $data['follow_by'] = $this->getUserId();
-        $data['follow_page'] = $request->page_id;
-        $page = Follow::create($data);
-        if ($page) {
+        $data['post_content'] = $request->post_content;
+        $data['user_id'] = $this->getUserId();
+        $data['page_id'] = $pageId;
+        $post = Post::create($data);
+        if ($post) {
 
-            return $this->sendResponse([], 'Page followed successfully');
+            return $this->sendResponse([], 'Post created successfully');
 
         }
 
-        return $this->sendError('Failed to create page', []);
+        return $this->sendError('Failed to create post', []);
+    }
+
+
+    /**
+     * Get post for Currently Logged in User
+     * @param Request $request
+     * @param $pageId
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function feed(Request $request)
+    {
+        $follow = Follow::where('follow_by', $this->getUserId())
+            ->select('follow_to', 'follow_page')
+            ->get()->toArray();
+        $follow_to = array_column($follow, 'follow_to');
+        $follow_page = array_column($follow, 'follow_page');
+
+
+        $pageExistence = Post::with(['user_post', 'page_post'])
+            ->whereIn('user_id', $follow_to)
+            ->orwhereIn('page_id', $follow_page)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return $pageExistence;
+
+        $data['page_id'] = $pageId;
+        $post = Post::create($data);
+        if ($post) {
+
+            return $this->sendResponse([], 'Post created successfully');
+
+        }
+
+        return $this->sendError('Failed to create post', []);
     }
 
 
